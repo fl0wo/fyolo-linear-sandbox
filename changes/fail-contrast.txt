@@ -1,0 +1,1 @@
+FLO-7: fix settings contrast
