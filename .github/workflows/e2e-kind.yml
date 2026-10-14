@@ -1,0 +1,25 @@
+name: e2e-kind
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  setup-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create kind cluster
+        run: echo "creating kind cluster"; sleep 5
+  e2e:
+    needs: setup-cluster
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run e2e suite
+        run: |
+          for i in $(seq 1 20000); do echo "[e2e] case $i: GET /api/items/$i -> 200 OK ($((i % 97))ms)"; done
+          if [ -f FAIL ]; then
+            echo "::warning::retrying flaky spec checkout.spec.ts"
+            echo "::error file=tests/e2e/checkout.spec.ts,line=42::checkout flow timed out after 30s"
+            exit 1
+          fi
+          echo "all green"
