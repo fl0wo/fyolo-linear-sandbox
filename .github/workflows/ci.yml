@@ -1,0 +1,17 @@
+name: ci
+on:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Long enough that a `slow` branch stays "running" while someone looks at it.
+    timeout-minutes: 350
+    steps:
+      - name: Fail on purpose
+        if: contains(github.head_ref, 'fail')
+        run: exit 1
+      - name: Stay pending
+        if: contains(github.head_ref, 'slow')
+        run: sleep 20700
+      - name: Pass
+        run: echo ok
